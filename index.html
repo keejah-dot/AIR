@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Air Style Store</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f7f7f7;
+    }
+
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 3rem;
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+    }
+
+    .nav-links li { margin-left: 1.5rem; }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+
+
+    .hero {
+      height: 70vh;
+      background: linear-gradient(rgba(0,0,0,.4), rgba(0,0,0,.4)),
+        url('https://images.unsplash.com/photo-1523275335684-37898b6baf30')
+        center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      color: white;
+    }
+
+    .hero-content {
+      padding-left: 3rem;
+    }
+
+    .hero h1 { font-size: 3rem; }
+
+    .hero-btn {
+      margin-top: 1rem;
+      padding: 0.8rem 2rem;
+      border: none;
+      background: black;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+
+    .container { padding: 3rem; }
+
+    .section-title {
+      margin-bottom: 2rem;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .product {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .product img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .product-info {
+      padding: 1rem;
+    }
+
+    .price {
+      font-weight: 600;
+      margin: 0.5rem 0;
+    }
+
+    .product button {
+      width: 100%;
+      padding: 0.6rem;
+      border: none;
+      background: black;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: #fff;
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+
+<body>
+
+
+<nav class="navbar">
+  <div class="logo">air</div>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Shop</a></li>
+    <li><a href="#">Cart <span id="cart-count">0</span></a></li>
+    <li><a href="#">Account</a></li>
+  </ul>
+</nav>
+
+
+<header class="hero">
+  <div class="hero-content">
+    <h1>Discover Quality Products</h1>
+    <p>Modern. Affordable. Reliable.</p>
+    <button class="hero-btn">Shop Now</button>
+  </div>
+</header>
+
+
+<main class="container">
+  <h2 class="section-title">Trending Products</h2>
+  <div id="products" class="product-grid">
+
+  </div>
+</main>
+
+
+<footer>
+  <p>&copy; 2026 Air. Built by keejah</p>
+  
+</footer>
+
+
+<<script>
+const productsDiv = document.getElementById("products");
+
+fetch("api/products/list.php")
+  .then(res => res.json())
+  .then(products => {
+    productsDiv.innerHTML = "";
+
+    products.forEach(product => {
+      const div = document.createElement("div");
+      div.className = "product";
+      div.style.cursor = "pointer";
+
+      div.onclick = () => {
+        window.location.href = `product.html?id=${product.id}`;
+      };
+
+      div.innerHTML = `
+        <img src="Admin/${product.image}" alt="${product.name}">
+        <div class="product-info">
+          <h3>${product.name}</h3>
+          <p class="price">ZMW ${product.price}</p>
+        </div>
+      `;
+
+      productsDiv.appendChild(div);
+    });
+  });
+</script>
+</body>
+</html>

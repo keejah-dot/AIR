@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Checkout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.required::after {
+  content: " *";
+  color: #e74c3c;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #3498db;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+input:invalid, textarea:invalid {
+  border-color: #e74c3c;
+}
+
+input:valid, textarea:valid {
+  border-color: #2ecc71;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.quantity-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.quantity-btn {
+  width: 40px;
+  height: 40px;
+  background: #f8f9fa;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.quantity-btn:hover {
+  background: #e9ecef;
+  border-color: #3498db;
+}
+
+#quantity {
+  flex: 1;
+  text-align: center;
+  padding: 0.9rem;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, #2c3e50 0%, #000000 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  position: relative;
+  min-height: 52px;
+}
+
+button[type="submit"]:hover {
+  background: linear-gradient(135deg, #34495e 0%, #1a1a1a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+.loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.order-summary {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  border: 2px solid #e1e5e9;
+}
+
+.order-summary h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.8rem 0;
+  color: #555;
+}
+
+.summary-item.total {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  border-top: 2px solid #e1e5e9;
+  padding-top: 0.8rem;
+  margin-top: 1rem;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+  display: none;
+}
+
+.error {
+  border-color: #e74c3c !important;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  display: none;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.back-link:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 10px;
+  }
+  
+  .container {
+    margin: 1rem auto;
+    padding: 1.5rem;
+  }
+  
+  input, textarea, select {
+    font-size: 16px;
+  }
+  
+  .quantity-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .quantity-btn {
+    width: 100%;
+    height: 45px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Complete Your Order</h2>
+  
+  
+  <div class="order-summary" id="orderSummary">
+    <h3>Order Summary</h3>
+    <div class="summary-item">
+      <span>Product:</span>
+      <span id="productName">Loading...</span>
+    </div>
+    <div class="summary-item">
+      <span>Unit Price:</span>
+      <span id="productPrice">$0.00</span>
+    </div>
+    <div class="summary-item">
+      <span>Quantity:</span>
+      <span id="summaryQuantity">1</span>
+    </div>
+    <div class="summary-item total">
+      <span>Total Amount:</span>
+      <span id="totalAmount">$0.00</span>
+    </div>
+  </div>
+  
+  
+  <div class="success-message" id="successMessage">
+    Order placed successfully! Redirecting...
+  </div>
+  
+  
+  <form id="orderForm">
+    <div class="form-group">
+      <label for="name" class="required">Full Name</label>
+      <input type="text" id="name" placeholder="Enter your full name" required>
+      <div class="error-message" id="nameError">Name must be at least 2 characters</div>
+    </div>
+    
+    <div class="form-group">
+      <label for="email" class="required">Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" required>
+      <div class="error-message" id="emailError">Please enter a valid email address</div>
+    </div>
+    
+    <div class="form-group">
+      <label for="phone" class="required">Phone Number</label>
+      <input type="tel" id="phone" placeholder="(123) 456-7890" required>
+      <div class="error-message" id="phoneError">Please enter a valid phone number</div>
+    </div>
+    
+    <div class="form-group">
+      <label for="address" class="required">Delivery Address</label>
+      <textarea id="address" placeholder="Enter your complete delivery address including apartment/unit number, city, and zip code" required></textarea>
+      <div class="error-message" id="addressError">Address must be at least 10 characters</div>
+    </div>
+    
+    <div class="form-group">
+      <label for="quantity" class="required">Quantity</label>
+      <div class="quantity-container">
+        <button type="button" class="quantity-btn" id="decreaseQty">-</button>
+        <input type="number" id="quantity" value="1" min="1" max="100" required>
+        <button type="button" class="quantity-btn" id="increaseQty">+</button>
+      </div>
+      <div class="error-message" id="quantityError">Quantity must be between 1 and 100</div>
+    </div>
+    
+    <div class="form-group">
+      <label for="payment">Payment Method</label>
+      <select id="payment">
+        <option value="cod">Cash on Delivery</option>
+        <option value="card">Credit/Debit Card</option>
+        <option value="paypal">PayPal</option>
+        <option value="bank">Bank Transfer</option>
+      </select>
+    </div>
+    
+    <button type="submit" id="submitBtn">
+      <span id="buttonText">Place Order</span>
+    </button>
+    
+    <a href="index.php" class="back-link">← Back to Shopping</a>
+  </form>
+</div>
+
+<script>
+
+const CONFIG = {
+  BASE_PRICE: 49.99,
+  PRODUCT_NAME: "Premium Wireless Headphones",
+  TAX_RATE: 0.08, // 8%
+  SHIPPING_COST: 4.99
+};
+
+const elements = {
+  form: document.getElementById('orderForm'),
+  name: document.getElementById('name'),
+  email: document.getElementById('email'),
+  phone: document.getElementById('phone'),
+  address: document.getElementById('address'),
+  quantity: document.getElementById('quantity'),
+  payment: document.getElementById('payment'),
+  submitBtn: document.getElementById('submitBtn'),
+  buttonText: document.getElementById('buttonText'),
+  successMessage: document.getElementById('successMessage'),
+  productName: document.getElementById('productName'),
+  productPrice: document.getElementById('productPrice'),
+  summaryQuantity: document.getElementById('summaryQuantity'),
+  totalAmount: document.getElementById('totalAmount'),
+  errorMessages: {
+    name: document.getElementById('nameError'),
+    email: document.getElementById('emailError'),
+    phone: document.getElementById('phoneError'),
+    address: document.getElementById('addressError'),
+    quantity: document.getElementById('quantityError')
+  }
+};
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  initializeCheckout();
+  setupEventListeners();
+  updateOrderSummary();
+});
+
+
+function initializeCheckout() {
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get("id");
+  
+  
+  elements.productName.textContent = CONFIG.PRODUCT_NAME;
+  elements.productPrice.textContent = `$${CONFIG.BASE_PRICE.toFixed(2)}`;
+  
+  
+  elements.form.dataset.productId = productId || 'default';
+}
+
+
+function setupEventListeners() {
+  
+  elements.form.addEventListener('submit', handleFormSubmit);
+  
+  
+  document.getElementById('increaseQty').addEventListener('click', () => adjustQuantity(1));
+  document.getElementById('decreaseQty').addEventListener('click', () => adjustQuantity(-1));
+  elements.quantity.addEventListener('input', updateOrderSummary);
+  
+  
+  elements.name.addEventListener('input', () => validateName());
+  elements.email.addEventListener('input', () => validateEmail());
+  elements.phone.addEventListener('input', formatPhoneNumber);
+  elements.address.addEventListener('input', () => validateAddress());
+  
+  
+  elements.phone.addEventListener('blur', formatPhoneNumber);
+}
+
+
+function adjustQuantity(change) {
+  let current = parseInt(elements.quantity.value) || 1;
+  let newValue = current + change;
+  
+  if (newValue >= parseInt(elements.quantity.min) && 
+      newValue <= parseInt(elements.quantity.max)) {
+    elements.quantity.value = newValue;
+    updateOrderSummary();
+    validateQuantity();
+  }
+}
+
+
+function formatPhoneNumber() {
+  let value = elements.phone.value.replace(/\D/g, '');
+  
+  if (value.length === 0) return '';
+  
+  let formatted = '';
+  if (value.length > 0) formatted = '(' + value.substring(0, 3);
+  if (value.length > 3) formatted += ') ' + value.substring(3, 6);
+  if (value.length > 6) formatted += '-' + value.substring(6, 10);
+  
+  elements.phone.value = formatted;
+  validatePhone();
+}
+
+
+function validateName() {
+  const name = elements.name.value.trim();
+  const isValid = name.length >= 2;
+  
+  if (!isValid && name.length > 0) {
+    showError(elements.name, elements.errorMessages.name, 'Name must be at least 2 characters');
+  } else {
+    clearError(elements.name, elements.errorMessages.name);
+  }
+  
+  return isValid;
+}
+
+function validateEmail() {
+  const email = elements.email.value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isValid = emailRegex.test(email);
+  
+  if (!isValid && email.length > 0) {
+    showError(elements.email, elements.errorMessages.email, 'Please enter a valid email address');
+  } else {
+    clearError(elements.email, elements.errorMessages.email);
+  }
+  
+  return isValid;
+}
+
+function validatePhone() {
+  const phone = elements.phone.value.replace(/\D/g, '');
+  const isValid = phone.length >= 10;
+  
+  if (!isValid && phone.length > 0) {
+    showError(elements.phone, elements.errorMessages.phone, 'Phone must be at least 10 digits');
+  } else {
+    clearError(elements.phone, elements.errorMessages.phone);
+  }
+  
+  return isValid;
+}
+
+function validateAddress() {
+  const address = elements.address.value.trim();
+  const isValid = address.length >= 10;
+  
+  if (!isValid && address.length > 0) {
+    showError(elements.address, elements.errorMessages.address, 'Address must be at least 10 characters');
+  } else {
+    clearError(elements.address, elements.errorMessages.address);
+  }
+  
+  return isValid;
+}
+
+function validateQuantity() {
+  const quantity = parseInt(elements.quantity.value);
+  const isValid = quantity >= 1 && quantity <= 100;
+  
+  if (!isValid) {
+    showError(elements.quantity, elements.errorMessages.quantity, 'Quantity must be between 1 and 100');
+  } else {
+    clearError(elements.quantity, elements.errorMessages.quantity);
+  }
+  
+  return isValid;
+}
+
+function validateAll() {
+  return validateName() &&
+         validateEmail() &&
+         validatePhone() &&
+         validateAddress() &&
+         validateQuantity();
+}
+
+
+function showError(inputElement, errorElement, message) {
+  inputElement.classList.add('error');
+  errorElement.textContent = message;
+  errorElement.style.display = 'block';
+}
+
+function clearError(inputElement, errorElement) {
+  inputElement.classList.remove('error');
+  errorElement.style.display = 'none';
+}
+
+
+function updateOrderSummary() {
+  const quantity = parseInt(elements.quantity.value) || 1;
+  const subtotal = CONFIG.BASE_PRICE * quantity;
+  const tax = subtotal * CONFIG.TAX_RATE;
+  const total = subtotal + tax + CONFIG.SHIPPING_COST;
+  
+  elements.summaryQuantity.textContent = quantity;
+  elements.totalAmount.textContent = `$${total.toFixed(2)}`;
+}
+
+
+async function handleFormSubmit(e) {
+  e.preventDefault();
+  
+
+  if (!validateAll()) {
+    alert('Please fix the errors in the form before submitting.');
+    return;
+  }
+  
+
+  const orderData = {
+    product_id: elements.form.dataset.productId,
+    product_name: CONFIG.PRODUCT_NAME,
+    full_name: sanitizeInput(elements.name.value),
+    email: sanitizeInput(elements.email.value),
+    phone: sanitizeInput(elements.phone.value),
+    address: sanitizeInput(elements.address.value),
+    quantity: parseInt(elements.quantity.value),
+    payment_method: elements.payment.value,
+    unit_price: CONFIG.BASE_PRICE,
+    total_price: parseFloat(elements.totalAmount.textContent.replace('$', '')),
+    timestamp: new Date().toISOString()
+  };
+  
+  
+  setLoading(true);
+  
+  try {
+    
+    const result = await simulateApiCall(orderData);
+    
+    if (result.success) {
+      
+      showSuccessMessage();
+      
+      
+      sessionStorage.setItem('lastOrder', JSON.stringify(orderData));
+      
+      
+      setTimeout(() => {
+        window.location.href = `order-confirmation.html?order_id=${result.order_id}`;
+      }, 2000);
+    } else {
+      throw new Error(result.error || 'Order failed');
+    }
+    
+  } catch (error) {
+    console.error('Order error:', error);
+    alert(`Order failed: ${error.message}\nPlease try again.`);
+  } finally {
+    
+    setLoading(false);
+  }
+}
+
+// Simulate API Call (Replace with actual fetch in production)
+function simulateApiCall(orderData) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      
+      const isSuccess = Math.random() < 0.9;
+      
+      if (isSuccess) {
+        resolve({
+          success: true,
+          order_id: 'ORD' + Date.now(),
+          message: 'Order placed successfully'
+        });
+      } else {
+        reject(new Error('Payment processing failed. Please try again.'));
+      }
+    }, 1500);
+  });
+}
+
+
+function sanitizeInput(text) {
+  return text.trim().replace(/[<>]/g, "");
+}
+
+function setLoading(isLoading) {
+  if (isLoading) {
+    elements.submitBtn.classList.add('loading');
+    elements.buttonText.textContent = 'Processing...';
+    elements.submitBtn.disabled = true;
+  } else {
+    elements.submitBtn.classList.remove('loading');
+    elements.buttonText.textContent = 'Place Order';
+    elements.submitBtn.disabled = false;
+  }
+}
+
+function showSuccessMessage() {
+  elements.successMessage.style.display = 'block';
+  elements.form.style.display = 'none';
+  elements.orderSummary.style.display = 'none';
+}
+
+
+updateOrderSummary();
+</script>
+
+</body>
+</html>
